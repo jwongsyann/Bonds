@@ -2,6 +2,10 @@
 
 downloadABO <- function(url) {
         
+        # Loads the necessary libraries
+        library(XML)
+        library(zoo)
+        
         # Reads the data from the url
         dat<-readHTMLTable(url)
         dat<-as.data.frame(dat)
@@ -33,10 +37,15 @@ downloadABO <- function(url) {
         dat$Entity<-as.character(dat$Entity)
         
         # Replaces the Entity with the cleaned up names.
-        dat$Entity[grep("Government",dat$Entity)]<-"Government"
+        dat$Entity[grep("Gov",dat$Entity)]<-"Government"
         
-        dat$Entity[grep("Corporate",dat$Entity)]<-"Corporate"
+        dat$Entity[grep("Banks",dat$Entity)]<-"BanksAndFinancialInstituitions"
+        
+        dat$Entity[grep("Corp",dat$Entity)]<-"OtherCorporates"
         
         dat$Entity[grep("Total",dat$Entity)]<-"Total"
         
+        return(dat)
+        
 }
+
