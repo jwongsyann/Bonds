@@ -1,14 +1,24 @@
 
-
-downloadABO <- function(url) {
-        
-        # Loads the necessary libraries
+downloadABO<-function(url) {
+        # Loads the necessary packages
         library(XML)
-        library(zoo)
         
         # Reads the data from the url
         dat<-readHTMLTable(url)
         dat<-as.data.frame(dat)
+        
+        # Unload packages
+        detach(package:XML)
+        
+        # Return Data
+        return(dat)
+}
+
+
+cleanABO <- function(dat) {
+        
+        # Loads the necessary packages
+        library(zoo)
         
         # Removes the prefix from the column names.
         names(dat)<-gsub("NULL.","",names(dat))
@@ -22,7 +32,24 @@ downloadABO <- function(url) {
         
         # Converts the Date column to date format. Needs to be read using
         # as.yearmon because only the month and year is provided.
-        dat$Date<-as.Date(as.yearmon(dat$Date))
+        try(dat$Date<-as.Date(as.yearmon(dat$Date)),silent=TRUE)
+        try(dat$Year<-as.Date(as.yearmon(dat$Year)),silent=TRUE)
+        
+        namelist<-names(dat)
+        
+        if (namelist[1]!="Date") {
+                names(dat)<-c("Date",namelist[2:length(namelist)])
+        }
+        
+        # Unload packages
+        detach(package:zoo)
+        
+}
+
+reshapeABO <- function (dat) {
+        
+        # Loads the necessary packages
+        library(reshape2)
         
         # Melts the Corporate and Government Data down in the Entity Column
         dat<-melt(dat,id.vars=c("Date","Market"),variable.name="Entity")
@@ -44,6 +71,9 @@ downloadABO <- function(url) {
         dat$Entity[grep("Corp",dat$Entity)]<-"OtherCorporates"
         
         dat$Entity[grep("Total",dat$Entity)]<-"Total"
+        
+        # Unloads packages
+        detach(package:reshape2)
         
         return(dat)
         
