@@ -44,12 +44,16 @@ cleanABO <- function(dat) {
         # Unload packages
         detach(package:zoo)
         
+        return(dat)
+        
 }
 
 reshapeABO <- function (dat) {
         
         # Loads the necessary packages
         library(reshape2)
+        
+        # Need to adapt the structure of the 
         
         # Melts the Corporate and Government Data down in the Entity Column
         dat<-melt(dat,id.vars=c("Date","Market"),variable.name="Entity")
@@ -68,9 +72,11 @@ reshapeABO <- function (dat) {
         
         dat$Entity[grep("Banks",dat$Entity)]<-"BanksAndFinancialInstituitions"
         
-        dat$Entity[grep("Corp",dat$Entity)]<-"OtherCorporates"
+        dat$Entity[grep("Corp",dat$Entity)]<-"NonFinancialCorporates"
         
         dat$Entity[grep("Total",dat$Entity)]<-"Total"
+        
+        dat$Entity[grep("Foreign",dat$Entity)]<-"ForeignHoldings"
         
         # Unloads packages
         detach(package:reshape2)
